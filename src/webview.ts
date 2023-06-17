@@ -207,10 +207,10 @@ export class Webview {
    * resources.
    */
   destroy() {
+    // assume "main_loop" (used by `run()`) has already been terminated
     for (const callback of Object.keys(this.#callbacks)) {
       this.unbind(callback);
     }
-    lib.symbols.webview_terminate(this.#handle);
     lib.symbols.webview_destroy(this.#handle);
     this.#handle = null;
   }
@@ -230,6 +230,8 @@ export class Webview {
   /**
    * Runs the main event loop until it's terminated. After this function exits
    * the webview is automatically destroyed.
+   *
+   * NOTE: this function will run until terminated (eg, by calling `webview_terminate(...)`).
    */
   run(): void {
     lib.symbols.webview_run(this.#handle);
